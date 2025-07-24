@@ -1,1 +1,25 @@
 /.metadata/
+
+# Maven
+/target/
+
+# Gradle
+/.gradle/
+/build/
+
+# IntelliJ / Eclipse
+*.iml
+.idea/
+/*.classpath
+/*.project
+/.settings/
+/out/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+
+# Java compiled class files
+*.class
+
