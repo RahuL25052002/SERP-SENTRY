@@ -37,6 +37,8 @@ public class User extends Base implements UserDetails {
 
     @Column(length = 255, nullable = false)
     private String password; // store hashed password
+    
+   
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false)
@@ -73,18 +75,4 @@ public class User extends Base implements UserDetails {
         return true;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

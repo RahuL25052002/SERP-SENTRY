@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @AllArgsConstructor
-@Slf4j
+@Slf4j// for logging purpose we have used this annotation. 
 public class RankingServiceImpl implements RankingService {
     
     private final RankingRepository rankingRepository;

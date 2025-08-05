@@ -6,9 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cdac.DTO.ApiResponse;
+import com.cdac.DTO.RecentUserProjectDTO;
 import com.cdac.DTO.UserDTO;
-
-import lombok.AllArgsConstructor;
 @Service
 @Transactional
 public
@@ -16,4 +15,6 @@ public
     List<UserDTO> getAllUserDetails(Long adminId);
     
     ApiResponse deleteUser(Long id);
+    
+    List<RecentUserProjectDTO> getAllUsersWithRecentProjects();
 } 

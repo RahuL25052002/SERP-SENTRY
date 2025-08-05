@@ -1,14 +1,16 @@
 package com.cdac.service;
 
+import java.util.Collection;
+
+import org.springframework.http.ResponseEntity;
+
+//import com.cdac.DTO.RecentUserProjectDTO;
+import com.cdac.DTO.SignInDTO;
+import com.cdac.DTO.SignInResponseDTO;
 import com.cdac.DTO.SignUpDTO;
 import com.cdac.DTO.UserDTO;
 
 import jakarta.validation.Valid;
-
-import java.util.Collection;
-
-import com.cdac.DTO.SignInDTO;
-import com.cdac.DTO.SignInResponseDTO;
 
 public interface UserService {
     String addUserDetails(SignUpDTO adddto);
@@ -18,4 +20,7 @@ public interface UserService {
 	void createUser(@Valid SignUpDTO signUpDTO);
 	SignInResponseDTO signInOrganization(@Valid SignInDTO signInDTO);
 	UserDTO getUserById(Long id);
+//	List<RecentUserProjectDTO> getRecentUsersWithProjects(LocalDate sinceDate);
+	ResponseEntity<UserDTO> getUserByEmail(String email);
+	
 }

@@ -137,4 +137,14 @@ public class ProjectServiceImpl implements ProjectService {
         // Note: User is set separately in the service methods
         return project;
     }
+    
+    @Override
+    public ResponseEntity<List<ProjectDTO>> getProjectsByUserId(Long userId) {
+        List<Project> projects = projectRepository.findByUserId(userId);
+        List<ProjectDTO> projectDTOs = projects.stream()
+            .map(project -> modelMapper.map(project, ProjectDTO.class))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(projectDTOs);
+    }
+
 }

@@ -1,8 +1,10 @@
 package com.cdac.service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//import com.cdac.DTO.RecentUserProjectDTO;
 import com.cdac.DTO.SignInDTO;
 import com.cdac.DTO.SignInResponseDTO;
 import com.cdac.DTO.SignUpDTO;
@@ -139,4 +142,23 @@ public class UserServiceImpl implements UserService {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public ResponseEntity<UserDTO> getUserByEmail(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (user.getRole() == UserRole.ROLE_INDIVIDUAL) {
+                UserDTO dto = modelMapper.map(user, UserDTO.class);
+                return ResponseEntity.ok(dto);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+	
+//	@Override
+//	public List<RecentUserProjectDTO> getRecentUsersWithProjects(LocalDate sinceDate) {
+//		return userRepository.findUsersWithMostRecentProject(sinceDate);
+//	
+//	}
 }

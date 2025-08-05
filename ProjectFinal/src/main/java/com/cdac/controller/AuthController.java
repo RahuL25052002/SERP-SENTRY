@@ -11,13 +11,15 @@ import com.cdac.entities.UserRole;
 import com.cdac.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
-
-    @Autowired
-    private UserService userService;
+//diff name
+    
+    private final UserService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@Valid @RequestBody SignUpDTO signUpDTO) {

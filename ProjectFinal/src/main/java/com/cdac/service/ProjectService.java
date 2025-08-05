@@ -15,4 +15,7 @@ public interface ProjectService {
     ResponseEntity<ProjectDTO> updateProject(Long id, ProjectDTO projectDTO);
     
     ResponseEntity<String> deleteProject(Long id);
+    
+    ResponseEntity<List<ProjectDTO>> getProjectsByUserId(Long userId);
+
 }

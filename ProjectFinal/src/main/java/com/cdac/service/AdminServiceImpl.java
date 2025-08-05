@@ -1,23 +1,29 @@
 package com.cdac.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.cdac.DTO.ApiResponse;
+import com.cdac.DTO.RecentUserProjectDTO;
 import com.cdac.DTO.UserDTO;
 import com.cdac.custom_exceptions.ResourceNotFoundException;
 import com.cdac.dao.AdminRepository;
 import com.cdac.entities.User;
 import com.cdac.entities.UserRole;
 import com.cdac.security.JwtUtils;
+
 import lombok.AllArgsConstructor;
 
 @Service
 @Transactional
+//only over the methods
 @AllArgsConstructor
 public class AdminServiceImpl implements AdminService {
     private final AdminRepository adminRepository;
@@ -34,7 +40,10 @@ public class AdminServiceImpl implements AdminService {
             throw new RuntimeException("User is not an admin");
         }
 
-        List<User> users = adminRepository.findAll();
+        //List<User> users = adminRepository.findByRole();
+        
+        List<UserRole> roles = Arrays.asList(UserRole.ROLE_ORGANIZATION, UserRole.ROLE_INDIVIDUAL);
+        List<User> users = adminRepository.findByRoleIn(roles);
 
         return users.stream()
             .map(user -> {
@@ -57,4 +66,11 @@ public class AdminServiceImpl implements AdminService {
 
         return new ApiResponse("User deleted!!");
     }
+    @Override
+    public List<RecentUserProjectDTO> getAllUsersWithRecentProjects() {
+        return adminRepository.findAllUsersWithRecentProjects();
+    }
+
+    
+    
 }

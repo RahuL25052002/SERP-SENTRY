@@ -50,7 +50,7 @@ public class SecurityConfiguration {
 		// un protected end points - swagger , view products
 		http.authorizeHttpRequests(request -> request
 				.requestMatchers("/auth/signup",
-						"/auth/signin","/v*/api-docs/**", "/swagger-ui/**")
+						"/auth/signin","/v*/api-docs/**", "/swagger-ui/**","/rankings/check","/api/keywords")
 				.permitAll()
 				// only admin should be allowed to add product
 				.requestMatchers("/admin/users/*").hasRole("ADMIN")
