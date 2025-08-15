@@ -24,7 +24,9 @@ public class SignUpDTO {
 //	private String lastName;
 	
 	@NotBlank(message = "User name is required....")
+	@Pattern(regexp = "^[A-Za-z]+$", message = "User name must contain only letters")
 	private String userName;
+
 	@Email(message = "Invalid email format")
 	private String email;
 	@Pattern(regexp = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[#@$*]).{5,20})", message = "invalid password format!!!!")

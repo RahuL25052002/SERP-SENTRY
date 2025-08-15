@@ -38,6 +38,12 @@ public class User extends Base implements UserDetails {
     @Column(length = 255, nullable = false)
     private String password; // store hashed password
     
+    
+    // for soft delete
+    @Column(name = "is_deleted")
+    private boolean deleted = false;
+    
+    
    
 
     @Enumerated(EnumType.STRING)
@@ -74,5 +80,23 @@ public class User extends Base implements UserDetails {
     public boolean isAccountNonExpired() {
         return true;
     }
+
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
+	}
 
 }

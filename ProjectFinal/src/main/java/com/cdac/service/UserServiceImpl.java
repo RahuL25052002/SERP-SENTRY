@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cdac.DTO.ApiResponse;
 //import com.cdac.DTO.RecentUserProjectDTO;
 import com.cdac.DTO.SignInDTO;
 import com.cdac.DTO.SignInResponseDTO;
@@ -19,6 +20,7 @@ import com.cdac.DTO.SignUpDTO;
 import com.cdac.DTO.UserDTO;
 import com.cdac.custom_exceptions.ApiException;
 import com.cdac.custom_exceptions.AuthenticationException;
+import com.cdac.custom_exceptions.ResourceNotFoundException;
 import com.cdac.dao.UserRepository;
 import com.cdac.entities.User;
 import com.cdac.entities.UserRole;
@@ -119,6 +121,8 @@ public class UserServiceImpl implements UserService {
             })
             .toList();
     }
+    
+   
 
     @Override
     public SignInResponseDTO signInIndividual(@Valid SignInDTO signInDTO) {

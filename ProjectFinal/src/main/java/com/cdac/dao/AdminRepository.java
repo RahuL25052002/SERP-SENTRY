@@ -30,4 +30,16 @@ public interface AdminRepository extends JpaRepository<User, Long> {
             ORDER BY p.updatedOn DESC
             """)
         List<RecentUserProjectDTO> findAllUsersWithRecentProjects();
+    
+    @Query("SELECT COUNT(u) FROM User u WHERE u.role IN ('ROLE_ORGANIZATION', 'ROLE_INDIVIDUAL')")
+    long countCurrentCustomers();
+    
+    @Query("""
+    	    SELECT FUNCTION('DATE_FORMAT', u.creationDate, '%Y-%m') AS month,
+    	           COUNT(u.id) AS count
+    	    FROM User u
+    	    GROUP BY FUNCTION('DATE_FORMAT', u.creationDate, '%Y-%m')
+    	    ORDER BY FUNCTION('DATE_FORMAT', u.creationDate, '%Y-%m')
+    	""")
+    	List<Object[]> getUserRegistrationsByMonth();
 } 

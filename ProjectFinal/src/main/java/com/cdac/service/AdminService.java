@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cdac.DTO.ApiResponse;
 import com.cdac.DTO.RecentUserProjectDTO;
+import com.cdac.DTO.UserCountResponse;
 import com.cdac.DTO.UserDTO;
+import com.cdac.DTO.UserRegistrationCountDTO;
 @Service
 @Transactional
 public
@@ -17,4 +19,7 @@ public
     ApiResponse deleteUser(Long id);
     
     List<RecentUserProjectDTO> getAllUsersWithRecentProjects();
+    
+    UserCountResponse getTotalUsersRegistered();
+    List<UserRegistrationCountDTO> getUserRegistrationsPerMonth() ;
 } 

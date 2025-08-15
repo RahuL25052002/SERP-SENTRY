@@ -50,14 +50,13 @@ public class SecurityConfiguration {
 		// un protected end points - swagger , view products
 		http.authorizeHttpRequests(request -> request
 				.requestMatchers("/auth/signup",
-						"/auth/signin","/v*/api-docs/**", "/swagger-ui/**","/rankings/check","/api/keywords")
+						"/auth/signin","/v*/api-docs/**", "/swagger-ui/**","/rankings/**","/api/keywords")
 				.permitAll()
 				// only admin should be allowed to add product
 				.requestMatchers("/admin/users/*").hasRole("ADMIN")
-				.requestMatchers("/user/**").hasRole("INDIVIDUAL")
+				.requestMatchers("/api/suggestions").hasAnyRole("ADMIN", "INDIVIDUAL")
+				.requestMatchers("/user/**","/rankings/**","/api/**").hasRole("INDIVIDUAL")
 				
-				// only customer can purchase the product
-				.requestMatchers("/events/*", "/notifications/*").hasRole("USER")
 				// Allow both ADMIN and INDIVIDUAL roles to access ranking endpoints
 				.requestMatchers("/rankings/**").authenticated()
 				// any other request - can accessed only by authenticated users
@@ -76,7 +75,7 @@ public class SecurityConfiguration {
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowedOrigins(List.of("http://localhost:5173")); // your frontend URL
+		config.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:5174","http://localhost:5175")); // your frontend URL
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 		config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 		config.setAllowCredentials(true); // If using cookies or Authorization headers

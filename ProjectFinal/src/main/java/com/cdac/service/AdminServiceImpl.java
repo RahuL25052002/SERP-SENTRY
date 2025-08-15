@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cdac.DTO.ApiResponse;
 import com.cdac.DTO.RecentUserProjectDTO;
+import com.cdac.DTO.UserCountResponse;
 import com.cdac.DTO.UserDTO;
+import com.cdac.DTO.UserRegistrationCountDTO;
 import com.cdac.custom_exceptions.ResourceNotFoundException;
 import com.cdac.dao.AdminRepository;
 import com.cdac.entities.User;
@@ -62,14 +64,32 @@ public class AdminServiceImpl implements AdminService {
     public ApiResponse deleteUser(Long userID) {
         User userEntity = adminRepository.findById(userID)
             .orElseThrow(() -> new ResourceNotFoundException("Invalid user id !!!!!"));
-        adminRepository.delete(userEntity);
 
-        return new ApiResponse("User deleted!!");
+        // Instead of hard delete, mark as deleted
+        userEntity.setDeleted(true);
+        adminRepository.save(userEntity);
+
+        return new ApiResponse("User soft deleted!!");
     }
+    
     @Override
     public List<RecentUserProjectDTO> getAllUsersWithRecentProjects() {
         return adminRepository.findAllUsersWithRecentProjects();
     }
+
+	@Override
+	public UserCountResponse getTotalUsersRegistered() {
+		long count = adminRepository.countCurrentCustomers();
+	    return new UserCountResponse("Total customers fetched successfully", count);
+	}
+	
+	@Override
+	public List<UserRegistrationCountDTO>getUserRegistrationsPerMonth() {
+	    return adminRepository.getUserRegistrationsByMonth()
+	        .stream()
+	        .map(row -> new UserRegistrationCountDTO((String) row[0], ((Number) row[1]).longValue()))
+	        .toList();
+	}
 
     
     

@@ -24,4 +24,6 @@ public class RankingRequestDTO {
     private String location; // Default: "United States"
     
     private String language; // Default: "en"
+
+	private String domainUrl;
 }

@@ -33,51 +33,70 @@ public class RankingServiceImpl implements RankingService {
     @Override
     public ResponseEntity<RankingResponseDTO> checkKeywordRanking(RankingRequestDTO requestDTO) {
         try {
-            // Validate project exists
-            Project project = projectRepository.findById(requestDTO.getProjectId())
-                .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + requestDTO.getProjectId()));
-            
-            log.info("Checking ranking for keyword: {} for project: {}", requestDTO.getKeyword(), project.getName());
-            
+            boolean isFreeTrial = requestDTO.getProjectId() == 0;
+
+            Project project = null;
+            String domainUrl;
+
+            if (isFreeTrial) {
+                // Free trial: use domain from frontend
+                domainUrl = requestDTO.getDomainUrl();
+                log.info("Free trial rank check for domain: {}, keyword: {}", domainUrl, requestDTO.getKeyword());
+            } else {
+                // Authenticated flow: fetch project
+                project = projectRepository.findById(requestDTO.getProjectId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Project not found with id: " + requestDTO.getProjectId()));
+                domainUrl = project.getDomainUrl();
+                log.info("Authenticated rank check for project: {}, keyword: {}", project.getName(), requestDTO.getKeyword());
+            }
+
             // Call SerpApi to get search results
             SerpApiResponseDTO serpResponse = serpApiService.searchKeywordRanking(
-                requestDTO.getKeyword(),
-                project.getDomainUrl(),
-                requestDTO.getLocation(),
-                requestDTO.getLanguage()
+                    requestDTO.getKeyword(),
+                    domainUrl,
+                    requestDTO.getLocation(),
+                    requestDTO.getLanguage()
             );
-            
+
             // Find position of the domain in results
-            Integer position = serpApiService.findDomainPosition(serpResponse, project.getDomainUrl());
-            
-            // Create ranking entity
-            Ranking ranking = new Ranking();
-            ranking.setProject(project);
-            ranking.setKeyword(requestDTO.getKeyword());
-            ranking.setPosition(position != null ? position : 0); // 0 means not found in top results
-            ranking.setDateChecked(LocalDate.now());
-            ranking.setSearchEngine(requestDTO.getSearchEngine());
-            ranking.setLocation(requestDTO.getLocation());
-            
-            // Find the actual URL that ranked (if found)
-            if (position != null && serpResponse.getOrganicResults() != null) {
-                serpResponse.getOrganicResults().stream()
-                    .filter(result -> result.getPosition().equals(position))
-                    .findFirst()
-                    .ifPresent(result -> ranking.setUrlFound(result.getLink()));
-            }
-            
-            // Save ranking
-            Ranking savedRanking = rankingRepository.save(ranking);
-            
-            // Convert to response DTO
-            RankingResponseDTO responseDTO = convertToResponseDTO(savedRanking);
+            Integer position = serpApiService.findDomainPosition(serpResponse, domainUrl);
+
+            RankingResponseDTO responseDTO = new RankingResponseDTO();
+            responseDTO.setKeyword(requestDTO.getKeyword());
+            responseDTO.setPosition(position != null ? position : 0);
+            responseDTO.setSearchEngine(requestDTO.getSearchEngine());
+            responseDTO.setLocation(requestDTO.getLocation());
+            responseDTO.setDateChecked(LocalDate.now());
+            responseDTO.setDomainUrl(domainUrl);
             responseDTO.setStatus(position != null ? "found" : "not_found");
-            
-            log.info("Ranking saved for keyword: {} with position: {}", requestDTO.getKeyword(), position);
-            
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-            
+
+            if (!isFreeTrial) {
+                // Save to DB only for logged-in users
+                Ranking ranking = new Ranking();
+                ranking.setProject(project);
+                ranking.setKeyword(requestDTO.getKeyword());
+                ranking.setPosition(responseDTO.getPosition());
+                ranking.setDateChecked(LocalDate.now());
+                ranking.setSearchEngine(requestDTO.getSearchEngine());
+                ranking.setLocation(requestDTO.getLocation());
+
+                // Find the actual URL that ranked (if found)
+                if (position != null && serpResponse.getOrganicResults() != null) {
+                    serpResponse.getOrganicResults().stream()
+                            .filter(result -> result.getPosition().equals(position))
+                            .findFirst()
+                            .ifPresent(result -> ranking.setUrlFound(result.getLink()));
+                }
+
+                Ranking savedRanking = rankingRepository.save(ranking);
+                responseDTO.setProjectId(project.getId());
+                responseDTO.setProjectName(project.getName());
+
+                log.info("Ranking saved for keyword: {} with position: {}", requestDTO.getKeyword(), position);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
         } catch (ResourceNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -85,7 +104,6 @@ public class RankingServiceImpl implements RankingService {
             throw new RuntimeException("Failed to check keyword ranking: " + e.getMessage());
         }
     }
-    
     @Override
     public ResponseEntity<List<RankingResponseDTO>> getProjectRankings(Long projectId) {
         try {
